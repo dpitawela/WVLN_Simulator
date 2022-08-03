@@ -1,2 +1,11 @@
-<h1>Simulator</h1>
-<app-site-frame></app-site-frame>
+<div class="grid-parent">
+    <h1 class="title">Web Simulator</h1>
+    <button (click)="isRecordingStarted = !isRecordingStarted" mat-raised-button
+        [color]="isRecordingStarted ? 'warn' : 'basic'">
+        <mat-icon class="rec-icon-color" *ngIf="!isRecordingStarted" fontIcon="fiber_manual_record"></mat-icon>
+        <mat-icon *ngIf="isRecordingStarted" fontIcon="stop"></mat-icon>
+        {{isRecordingStarted ? 'Stop Recording' : 'Start Recording'}}
+    </button>
+</div>
+
+<app-site-frame (saveRecording)="saveRecording($event)" [isRecordingStarted]="isRecordingStarted"></app-site-frame>

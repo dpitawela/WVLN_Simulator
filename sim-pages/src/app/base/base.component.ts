@@ -6,10 +6,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./base.component.css']
 })
 export class BaseComponent implements OnInit {
-
-  constructor() { }
+  isRecordingStarted: boolean = false
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
 
+  saveRecording(recordings:string){
+    console.log(recordings)
+  }
 }
