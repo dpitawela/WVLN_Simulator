@@ -1,0 +1,17 @@
+.grid-parent {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 0.8fr 0.2fr;
+}
+
+.title {
+    color: rgb(40, 65, 65);
+    font-size: xx-large;
+    padding-left: 10px;
+    padding-top: 10px;
+    font-family: Georgia, 'Times New Roman', Times, serif
+}
+
+.blue-icon-color {
+    color: #3f51b5;
+}

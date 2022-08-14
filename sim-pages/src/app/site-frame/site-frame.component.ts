@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { StoreModel } from '../types/storeModel';
 
 @Component({
   selector: 'app-site-frame',
@@ -8,7 +9,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 })
 export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isRecordingStarted: boolean = false; // indicates whether to record
-  @Output() saveRecording = new EventEmitter<string>();
+  @Output() saveRecording = new EventEmitter<StoreModel>();
 
   recordings: string = "";
   eventRefresher: any; // interval timer to refresh iframe event bindings
@@ -31,7 +32,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChild('myframe') iframe: ElementRef | any;
 
   constructor(private sanitizer: DomSanitizer) {
-    this.url = this.sanitizer.bypassSecurityTrustResourceUrl('assets/crawled/nationalRailwaySA/nationalRailwaySA/index.html');
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl('assets/crawled/hansel/index.html');
   }
 
   ngAfterViewInit(): void {
@@ -41,7 +42,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['isRecordingStarted'].currentValue && this.recordings.length > 5) {
-      this.saveRecording.emit(this.recordings)
+      this.saveRecording.emit({ 'url': this.url, 'actions': this.recordings } as StoreModel)
       this.recordings = "";
     }
   }
@@ -68,8 +69,9 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
     // detects if only clicked on a link
     if (event.target.closest("a") != null) {
       let href: string = event.target.closest("a").getAttribute("href")
-      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': href })
+      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': href, 'outer_html': event.target.outerHTML })
     }
+    // console.log(event.target.outerHTML)
     // console.log(event.target['baseURI'])    
   }
 
@@ -95,10 +97,10 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   clickHandle(message: MessageEvent): void {
-    let text = "click," + message.data['x'] + "," + message.data['y'] + "," + message.data['href'];
+    let text = "click," + message.data['x'] + "," + message.data['y'] + "," + message.data['href'] + "," + message.data['outer_html'];
     if (this.isRecordingStarted) {
       this.recordings += text + "\n"
-      // console.log(text)
+      console.log(text)
     }
   }
 

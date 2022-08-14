@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { LambdaService } from '../services/lambda.service';
+import { StoreModel } from '../types/storeModel';
 
 @Component({
   selector: 'app-base',
@@ -7,13 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BaseComponent implements OnInit {
   isRecordingStarted: boolean = false
-  constructor() {
+  constructor(private lambdaService: LambdaService) {
   }
 
   ngOnInit(): void {
   }
 
-  saveRecording(recordings:string){
+  saveRecording(recordings: StoreModel) {
     console.log(recordings)
+    // this.lambdaService.storeActions(recordings)
   }
 }
