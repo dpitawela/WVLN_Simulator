@@ -7,7 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BaseComponent } from './base/base.component';
 import { SiteFrameComponent } from './site-frame/site-frame.component';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlaybackBaseComponent } from './playback-base/playback-base.component';
 import { SitePlaybackFrameComponent } from './site-playback-frame/site-playback-frame.component';
 
@@ -23,9 +23,9 @@ import { SitePlaybackFrameComponent } from './site-playback-frame/site-playback-
     BrowserModule,
     AppRoutingModule,
     MatButtonModule,
-    NoopAnimationsModule,
+    BrowserAnimationsModule,
     MatIconModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LambdaService } from '../services/lambda.service';
-import { StoreModel } from '../types/storeModel';
+import { StoreModel } from '../types/model';
 
 @Component({
   selector: 'app-base',
@@ -16,7 +16,6 @@ export class BaseComponent implements OnInit {
   }
 
   saveRecording(recordings: StoreModel) {
-    console.log(recordings)
-    // this.lambdaService.storeActions(recordings)
+    this.lambdaService.storeActions(recordings)
   }
 }

@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { StoreModel } from '../types/storeModel';
+import { ActionModel, StoreModel } from '../types/model';
+import { Buffer } from 'buffer';
 
 @Component({
   selector: 'app-site-frame',
@@ -11,7 +12,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isRecordingStarted: boolean = false; // indicates whether to record
   @Output() saveRecording = new EventEmitter<StoreModel>();
 
-  recordings: string = "";
+  recordings: ActionModel[] = [];
   eventRefresher: any; // interval timer to refresh iframe event bindings
 
   // for mouse movements
@@ -27,12 +28,13 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   // iframe base url
   url: SafeResourceUrl
+  strURL = 'assets/crawled/hansel/hanselfrombasel.com/index.html'
 
   // to detect iframe
   @ViewChild('myframe') iframe: ElementRef | any;
 
   constructor(private sanitizer: DomSanitizer) {
-    this.url = this.sanitizer.bypassSecurityTrustResourceUrl('assets/crawled/hansel/index.html');
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.strURL);
   }
 
   ngAfterViewInit(): void {
@@ -41,9 +43,9 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (!changes['isRecordingStarted'].currentValue && this.recordings.length > 5) {
-      this.saveRecording.emit({ 'url': this.url, 'actions': this.recordings } as StoreModel)
-      this.recordings = "";
+    if (!changes['isRecordingStarted'].currentValue && this.recordings.length > 0) {
+      this.saveRecording.emit({ url: this.strURL, actions: this.recordings.slice() } as StoreModel)
+      this.recordings.splice(0);
     }
   }
 
@@ -68,8 +70,8 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   clickDetect(event: any): void {
     // detects if only clicked on a link
     if (event.target.closest("a") != null) {
-      let href: string = event.target.closest("a").getAttribute("href")
-      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': href, 'outer_html': event.target.outerHTML })
+      let anchorTag: HTMLAnchorElement = event.target.closest("a")
+      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': anchorTag.getAttribute("href"), 'outer_html': anchorTag.outerHTML })
     }
     // console.log(event.target.outerHTML)
     // console.log(event.target['baseURI'])    
@@ -97,10 +99,16 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   clickHandle(message: MessageEvent): void {
-    let text = "click," + message.data['x'] + "," + message.data['y'] + "," + message.data['href'] + "," + message.data['outer_html'];
+    let clickAction: ActionModel = {
+      type: message.data['type'],
+      x_pos: message.data['x'],
+      y_pos: message.data['y'],
+      href: message.data['href'],
+      outer_html: Buffer.from(message.data['outer_html'], 'binary').toString('base64')
+    }
     if (this.isRecordingStarted) {
-      this.recordings += text + "\n"
-      console.log(text)
+      this.recordings.push(clickAction)
+      // console.log(clickAction)
     }
   }
 
@@ -128,9 +136,9 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
       }
 
       if (this.isRecordingStarted) {
-        text += "," + x_pos + "," + y_pos
-        this.recordings += text + "\n"
-        // console.log(text)
+        let moveAction: ActionModel = { type: text, x_pos: x_pos, y_pos: y_pos }
+        // this.recordings.push(moveAction)
+        // console.log(moveAction)
       }
 
       this.x_pos_old = x_pos
@@ -161,8 +169,9 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
       }
 
       if (this.isRecordingStarted) {
-        this.recordings += text + "\n"
-        // console.log(text)
+        let scrollAction: ActionModel = { type: text }
+        // this.recordings.push(scrollAction)
+        // console.log(scrollAction)
       }
 
       this.current_y_pos = scroll_verticle;
