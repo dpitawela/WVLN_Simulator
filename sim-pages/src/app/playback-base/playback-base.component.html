@@ -1,10 +1,18 @@
-<div class="grid-parent">
+<div [class]="isPlaying? 'grid-play':'grid-stop'">
     <h1 class="title">Web Simulator</h1>
-    <button (click)="isPlaying = !isPlaying" mat-raised-button [color]="isPlaying ? 'primary' : 'basic'">
-        <mat-icon class="blue-icon-color" *ngIf="!isPlaying" fontIcon="play_arrow"></mat-icon>
+
+    <button (click)="isPaused = !isPaused" mat-stroked-button color='primary' *ngIf="isPlaying">
+        <mat-icon *ngIf="!isPaused" fontIcon="pause"></mat-icon>
+        <mat-icon *ngIf="isPaused" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
+        {{isPaused ? 'Play' : 'Pause'}}
+    </button>
+
+    <button (click)=" isPlaying=!isPlaying" mat-raised-button [color]="isPlaying ? 'primary' : 'basic'">
+        <mat-icon *ngIf="!isPlaying" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
         <mat-icon *ngIf="isPlaying" fontIcon="stop"></mat-icon>
         {{isPlaying ? 'Stop' : 'Playback'}}
     </button>
 </div>
 
-<app-site-playback-frame [retrievedActions]="retrievedActions" [(isPlaying)]="isPlaying"></app-site-playback-frame>
+<app-site-playback-frame [retrievedActions]="retrievedActions" [(isPlaying)]="isPlaying" [(isPaused)]="isPaused">
+</app-site-playback-frame>
