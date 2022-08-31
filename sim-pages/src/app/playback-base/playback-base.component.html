@@ -1,18 +1,39 @@
-<div [class]="isPlaying? 'grid-play':'grid-stop'">
+<div [class]="isPlaying ? 'grid-play':'grid-stop'">
     <h1 class="title">Web Simulator</h1>
 
-    <button (click)="isPaused = !isPaused" mat-stroked-button color='primary' *ngIf="isPlaying">
-        <mat-icon *ngIf="!isPaused" fontIcon="pause"></mat-icon>
+    <h5 style="margin:auto" *ngIf="isPlaying">Playing: Step {{currentIteration}} / {{nActions}} </h5>
+
+
+    <!-- pause/play -->
+    <button (click)="isPaused = !isPaused" mat-raised-button [color]="isPaused ? 'basic' :'primary'" *ngIf="isPlaying">
+        <mat-icon *ngIf=" !isPaused" fontIcon="pause"></mat-icon>
         <mat-icon *ngIf="isPaused" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
-        {{isPaused ? 'Play' : 'Pause'}}
+        <!-- {{isPaused ? 'Play' : 'Pause'}} -->
     </button>
 
-    <button (click)=" isPlaying=!isPlaying" mat-raised-button [color]="isPlaying ? 'primary' : 'basic'">
+    <!-- step back -->
+    <button (click)="jumpPreviousStep=!jumpPreviousStep" mat-raised-button color='basic'
+        [disabled]="jumpPreviousStep || (isPlaying && !isPaused)">
+        <mat-icon fontIcon="skip_previous"
+            [class]="jumpPreviousStep || (isPlaying && !isPaused) ? '':'blue-icon-color'"></mat-icon>
+    </button>
+
+    <!-- stop/play -->
+    <button (click)="isPlaying=!isPlaying" mat-raised-button color='basic'>
         <mat-icon *ngIf="!isPlaying" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
-        <mat-icon *ngIf="isPlaying" fontIcon="stop"></mat-icon>
-        {{isPlaying ? 'Stop' : 'Playback'}}
+        <mat-icon *ngIf="isPlaying" fontIcon="stop" class="blue-icon-color"></mat-icon>
+        {{isPlaying ? '' : 'Playback'}}
+    </button>
+
+    <!-- step forward -->
+    <button (click)="jumpNextStep=!jumpNextStep" mat-raised-button color='basic'
+        [disabled]="jumpNextStep || (isPlaying && !isPaused)">
+        <mat-icon fontIcon="skip_next" [class]="jumpNextStep || (isPlaying && !isPaused) ? '':'blue-icon-color'">
+        </mat-icon>
     </button>
 </div>
 
-<app-site-playback-frame [retrievedActions]="retrievedActions" [(isPlaying)]="isPlaying" [(isPaused)]="isPaused">
+<app-site-playback-frame [retrievedActions]="retrievedActions" [(isPlaying)]="isPlaying" [(isPaused)]="isPaused"
+    [(jumpNextStep)]="jumpNextStep" [(jumpPreviousStep)]="jumpPreviousStep" (iterationUpdate)="updateIteration($event)"
+    (nActions)="getTotalActions($event)">
 </app-site-playback-frame>

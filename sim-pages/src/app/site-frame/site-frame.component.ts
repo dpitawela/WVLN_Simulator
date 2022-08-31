@@ -72,11 +72,12 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
     if (event.target.closest("a") != null) {
       let anchorTag: HTMLAnchorElement = event.target.closest("a")
       parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': anchorTag.getAttribute("href"), 'outer_html': anchorTag.outerHTML })
+
     } else if (event.target.closest("button") != null) {
-      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': '', 'outer_html': event.target.closest("button").outerHTML })
+      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': '#', 'outer_html': event.target.closest("button").outerHTML })
 
     } else if (event.target.closest("input") != null) {
-      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': '', 'outer_html': event.target.closest("input").outerHTML })
+      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': '#', 'outer_html': event.target.closest("input").outerHTML })
     }
     // console.log(event.target.outerHTML)
     // console.log(event.target['baseURI'])    
