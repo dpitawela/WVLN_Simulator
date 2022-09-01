@@ -1,13 +1,13 @@
 .grid-stop {
     display: grid;
     align-items: center;
-    grid-template-columns: 1.5fr max-content min-content min-content min-content;
+    grid-template-columns: 0.8fr 0.5fr min-content min-content min-content;
 }
 
 .grid-play {
     display: grid;
     align-items: center;
-    grid-template-columns: 0.8fr 0.2fr 0.2fr min-content min-content min-content;
+    grid-template-columns: 0.8fr 0.5fr 0.2fr min-content min-content min-content;
 }
 
 .title {
@@ -20,4 +20,10 @@
 
 .blue-icon-color {
     color: #3f51b5;
+}
+
+.status {
+    text-align: end;
+    margin-right: 10%;
+    margin-top: 7%;
 }

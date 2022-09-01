@@ -1,11 +1,18 @@
-<div [class]="isPlaying ? 'grid-play':'grid-stop'">
+<div [class]="isPlaying && (currentIteration != nActions) ? 'grid-play':'grid-stop'">
     <h1 class="title">Web Simulator</h1>
 
-    <h5 style="margin:auto" *ngIf="isPlaying">Playing: Step {{currentIteration}} / {{nActions}} </h5>
+    <h5 class="status" *ngIf="!isPlaying && (currentIteration <= 0)"> Not started </h5>
+    <h5 class="status" *ngIf="isPlaying && !isPaused && currentIteration != nActions">
+        Playing: step {{currentIteration}} / {{nActions}} </h5>
+    <h5 class="status" *ngIf="isPlaying && isPaused && currentIteration != nActions">Paused at the end of: step
+        {{currentIteration}} / {{nActions}} </h5>
+    <h5 class="status" *ngIf="currentIteration == nActions"> Sequence ended at: step {{currentIteration}} / {{nActions}}
+    </h5>
 
 
     <!-- pause/play -->
-    <button (click)="isPaused = !isPaused" mat-raised-button [color]="isPaused ? 'basic' :'primary'" *ngIf="isPlaying">
+    <button (click)="isPaused = !isPaused" mat-raised-button [color]="isPaused ? 'basic' :'primary'"
+        *ngIf="isPlaying && currentIteration != nActions" [disabled]="currentIteration == nActions">
         <mat-icon *ngIf=" !isPaused" fontIcon="pause"></mat-icon>
         <mat-icon *ngIf="isPaused" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
         <!-- {{isPaused ? 'Play' : 'Pause'}} -->
@@ -13,9 +20,10 @@
 
     <!-- step back -->
     <button (click)="jumpPreviousStep=!jumpPreviousStep" mat-raised-button color='basic'
-        [disabled]="jumpPreviousStep || (isPlaying && !isPaused)">
+        [disabled]="jumpPreviousStep || ((isPlaying && !isPaused) && currentIteration != nActions)">
         <mat-icon fontIcon="skip_previous"
-            [class]="jumpPreviousStep || (isPlaying && !isPaused) ? '':'blue-icon-color'"></mat-icon>
+            [class]="jumpPreviousStep || ((isPlaying && !isPaused) && currentIteration != nActions) ? '':'blue-icon-color'">
+        </mat-icon>
     </button>
 
     <!-- stop/play -->
@@ -27,8 +35,9 @@
 
     <!-- step forward -->
     <button (click)="jumpNextStep=!jumpNextStep" mat-raised-button color='basic'
-        [disabled]="jumpNextStep || (isPlaying && !isPaused)">
-        <mat-icon fontIcon="skip_next" [class]="jumpNextStep || (isPlaying && !isPaused) ? '':'blue-icon-color'">
+        [disabled]="jumpNextStep || (isPlaying && !isPaused) || currentIteration == nActions">
+        <mat-icon fontIcon="skip_next"
+            [class]="jumpNextStep || (isPlaying && !isPaused) || currentIteration == nActions ? '':'blue-icon-color'">
         </mat-icon>
     </button>
 </div>

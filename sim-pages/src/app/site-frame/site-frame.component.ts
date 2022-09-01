@@ -27,14 +27,15 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   scrollEvent: MouseEvent | any;
 
   // iframe base url
-  url: SafeResourceUrl
+  url: SafeResourceUrl = ''
   strURL = 'assets/crawled/hansel/hanselfrombasel.com/index.html'
+  lastSuccessfulURL: string | undefined
 
   // to detect iframe
   @ViewChild('myframe') iframe: ElementRef | any;
 
   constructor(private sanitizer: DomSanitizer) {
-    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.strURL);
+    this.updateURL(this.strURL)
   }
 
   ngAfterViewInit(): void {
@@ -183,6 +184,27 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
       this.current_y_pos = scroll_verticle;
       this.current_x_pos = scroll_horizontal;
       this.scroll_wait_itr = 5
+    }
+  }
+
+  updateURL(url: string) {
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  checkURL() {
+    if (this.iframe == null) {
+      return
+    }
+    let iframe: HTMLIFrameElement = this.iframe.nativeElement // taking all html code displayed on the iframe at the moment
+
+    try {
+      this.lastSuccessfulURL = iframe.contentWindow?.location.pathname.substring(1)
+      console.log(this.lastSuccessfulURL)
+
+    } catch (error) {
+      console.log((error as string).includes('cross-origin'))
+      if (this.lastSuccessfulURL != null)
+        this.updateURL(this.lastSuccessfulURL)
     }
   }
 }

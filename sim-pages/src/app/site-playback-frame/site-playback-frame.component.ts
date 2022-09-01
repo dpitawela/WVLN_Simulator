@@ -54,9 +54,8 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
 
   ngOnInit(): void {
     this.strURL = this.retrievedActions.url
-    this.nActions.emit(this.retrievedActions.actions?.length)
-    // console.log(this.strURL)
     // this.updateURL(this.strURL)
+    this.nActions.emit(this.retrievedActions.actions?.length)
   }
 
   async startPlaying() {
@@ -68,9 +67,9 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
         await this.playNextStep()
       }
 
-      if (this.isVideoEnded()) {
-        this.isPlayingChange.emit(false);
-      }
+      // if (this.isVideoEnded()) {
+      //   this.isPlayingChange.emit(false);
+      // }
     }
   }
 
@@ -210,7 +209,7 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
     //   }
     // }
 
-    console.log("ori url:", relativeURL)
+    // console.log("ori url:", relativeURL)
     let currentURLParts: string[] = this.strURL.split('/')
     if (relativeURL.startsWith('.')) {
       // console.log("with dot:")
@@ -219,7 +218,7 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       // console.log(this.strURL)
 
     } else if (relativeURL.startsWith('assets')) { // index page
-      console.log(relativeURL)
+      // console.log(relativeURL)
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(relativeURL);
 
     } else { // if new relative url is a forward from current page
@@ -230,29 +229,15 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
   }
 
   async ngOnChanges(changes: SimpleChanges) {
-    // console.log(changes)
-    if (changes['isPlaying'] != null) {
-      if (changes['isPlaying'].currentValue) {
-        console.log("mona")
+    console.log(changes)
+    if (changes["isPlaying"] != null && changes["isPlaying"].currentValue && !this.jumpNextStep) {
+      await this.startPlaying()
+    } else if (changes["isPlaying"] != null && !changes["isPlaying"].currentValue) {
+      this.resetPlay()
+    } else if (changes["jumpNextStep"] != null && changes["jumpNextStep"].currentValue) {
 
-        if (!this.jumpNextStep) {
-          if (this.isVideoEnded()) {
-            this.iteration = -1
-            console.log("wadunaa")
-            this.updateURL(this.retrievedActions.url)
-          }
-          this.startPlaying()
-        }
-      } else if (!changes['isPlaying'].currentValue && !this.isVideoEnded() && !this.jumpNextStep) {
-        this.resetPlay()
-      }
-    } else if (!this.isPaused && !this.isVideoEnded() && !this.jumpNextStep) {
-      this.startPlaying()
-    }
-
-    if (changes['jumpNextStep'] != null && changes['jumpNextStep'].currentValue) {
       if (!this.isPlaying) {
-        this.resetPlay()
+        // this.resetPlay()
         this.isPlayingChange.emit(true)
       }
 
@@ -262,22 +247,21 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       this.jumpNextStepChange.emit(false)
       this.isPausedChange.emit(true)
 
-      if (this.isVideoEnded()) {
-        this.isPlayingChange.emit(false);
-        this.isPausedChange.emit(false)
+    } else if (changes["jumpPreviousStep"] != null && changes["jumpPreviousStep"].currentValue) {
+      if (this.historyStack.length == 1) {
+        this.resetPlay()
+        return
       }
-    }
-
-    if (changes['jumpPreviousStep'] != null && changes['jumpPreviousStep'].currentValue) {
-      console.log("prev")
 
       this.jumpPreviousStepChange.emit(true)
       this.isPausedChange.emit(false)
+      this.isJumpingBack = true
       await this.playPreviousStep()
-      console.log("offfff")
       this.jumpPreviousStepChange.emit(false)
       this.isPausedChange.emit(true)
-      this.isJumpingBack = true
+
+    } else if (changes["isPaused"] != null && !changes["isPaused"].currentValue && !this.jumpNextStep) {
+      await this.startPlaying()
     }
   }
 
@@ -285,15 +269,11 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
     if (this.isJumpingBack || this.iframe == null) {
       return
     }
-    console.log("his length prev in add", this.historyStack.length)
 
     let iframe: HTMLIFrameElement = this.iframe.nativeElement // taking all html code displayed on the iframe at the moment
     let currentURL: string | undefined = iframe.contentWindow?.location.pathname.substring(1)
 
     this.historyStack.push([this.iteration, currentURL])
-    console.log(this.historyStack)
-    console.log("adding to history")
-    console.log("his length after in add", this.historyStack.length)
     this.isJumpingBack = false
   }
 
@@ -303,14 +283,10 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       return
 
     let history: any = this.historyStack.pop()
+    this.iteration = history[0]
+    this.updateURL(history[1])
+    console.log("his length after in play", this.historyStack.length)
 
-    if (history[0] == -1) {
-      this.resetPlay()
-    } else {
-      this.iteration = history[0]
-      this.updateURL(history[1])
-      console.log("his length after in play", this.historyStack.length)
-    }
 
   }
 
