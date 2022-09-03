@@ -10,6 +10,9 @@ import { SiteFrameComponent } from './site-frame/site-frame.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlaybackBaseComponent } from './playback-base/playback-base.component';
 import { SitePlaybackFrameComponent } from './site-playback-frame/site-playback-frame.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CorsDialogComponent } from './site-frame/cors-dialog/cors-dialog.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -18,6 +21,7 @@ import { SitePlaybackFrameComponent } from './site-playback-frame/site-playback-
     SiteFrameComponent,
     PlaybackBaseComponent,
     SitePlaybackFrameComponent,
+    CorsDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -26,6 +30,8 @@ import { SitePlaybackFrameComponent } from './site-playback-frame/site-playback-
     BrowserAnimationsModule,
     MatIconModule,
     HttpClientModule,
+    MatDialogModule,
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

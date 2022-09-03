@@ -2,10 +2,13 @@
 
 html,
 body {
-    width: 820px;
-}
-
-body {
+    max-width: 820px;
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.my-class .cdk-overlay-container,
+.cdk-global-overlay-wrapper,
+.cdk-overlay-backdrop {
+    max-width: 820px;
 }

@@ -2,6 +2,8 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActionModel, StoreModel } from '../types/model';
 import { Buffer } from 'buffer';
+import { MatDialog } from '@angular/material/dialog';
+import { CorsDialogComponent } from './cors-dialog/cors-dialog.component';
 
 @Component({
   selector: 'app-site-frame',
@@ -34,8 +36,8 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   // to detect iframe
   @ViewChild('myframe') iframe: ElementRef | any;
 
-  constructor(private sanitizer: DomSanitizer) {
-    this.updateURL(this.strURL)
+  constructor(private sanitizer: DomSanitizer, public dialog: MatDialog) {
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.strURL);
   }
 
   ngAfterViewInit(): void {
@@ -187,24 +189,23 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
-  updateURL(url: string) {
-    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-  }
-
   checkURL() {
+    // this function checks if the iframe accessing sites from other origins and restricts
     if (this.iframe == null) {
       return
     }
-    let iframe: HTMLIFrameElement = this.iframe.nativeElement // taking all html code displayed on the iframe at the moment
 
+    let iframe: HTMLIFrameElement = this.iframe.nativeElement // taking all html code displayed on the iframe at the moment
     try {
       this.lastSuccessfulURL = iframe.contentWindow?.location.pathname.substring(1)
-      console.log(this.lastSuccessfulURL)
-
     } catch (error) {
-      console.log((error as string).includes('cross-origin'))
-      if (this.lastSuccessfulURL != null)
-        this.updateURL(this.lastSuccessfulURL)
+      // warns the user with the dialog prompt
+      const dialogRef = this.dialog.open(CorsDialogComponent)
+      dialogRef.afterClosed().subscribe(result => {
+        if (this.lastSuccessfulURL != null)
+          // redirects the user to the last successful URL and replaces history
+          iframe.contentWindow?.location.replace(this.lastSuccessfulURL)
+      });
     }
   }
 }

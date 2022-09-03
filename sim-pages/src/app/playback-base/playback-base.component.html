@@ -12,7 +12,8 @@
 
     <!-- pause/play -->
     <button (click)="isPaused = !isPaused" mat-raised-button [color]="isPaused ? 'basic' :'primary'"
-        *ngIf="isPlaying && currentIteration != nActions" [disabled]="currentIteration == nActions">
+        [matTooltip]="isPaused? 'Resume':'Pause'" *ngIf="isPlaying && currentIteration != nActions"
+        [disabled]="currentIteration == nActions">
         <mat-icon *ngIf=" !isPaused" fontIcon="pause"></mat-icon>
         <mat-icon *ngIf="isPaused" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
         <!-- {{isPaused ? 'Play' : 'Pause'}} -->
@@ -20,6 +21,7 @@
 
     <!-- step back -->
     <button (click)="jumpPreviousStep=!jumpPreviousStep" mat-raised-button color='basic'
+        matTooltip="Back to the step previous page first loaded"
         [disabled]="jumpPreviousStep || ((isPlaying && !isPaused) && currentIteration != nActions)">
         <mat-icon fontIcon="skip_previous"
             [class]="jumpPreviousStep || ((isPlaying && !isPaused) && currentIteration != nActions) ? '':'blue-icon-color'">
@@ -27,14 +29,15 @@
     </button>
 
     <!-- stop/play -->
-    <button (click)="isPlaying=!isPlaying" mat-raised-button color='basic'>
+    <button (click)="isPlaying=!isPlaying" mat-raised-button color='basic'
+        [matTooltip]="isPlaying ? 'Stop to go back to the beginning':'Start playing'">
         <mat-icon *ngIf="!isPlaying" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
         <mat-icon *ngIf="isPlaying" fontIcon="stop" class="blue-icon-color"></mat-icon>
         {{isPlaying ? '' : 'Playback'}}
     </button>
 
     <!-- step forward -->
-    <button (click)="jumpNextStep=!jumpNextStep" mat-raised-button color='basic'
+    <button (click)="jumpNextStep=!jumpNextStep" mat-raised-button color='basic' matTooltip="Play next step"
         [disabled]="jumpNextStep || (isPlaying && !isPaused) || currentIteration == nActions">
         <mat-icon fontIcon="skip_next"
             [class]="jumpNextStep || (isPlaying && !isPaused) || currentIteration == nActions ? '':'blue-icon-color'">
