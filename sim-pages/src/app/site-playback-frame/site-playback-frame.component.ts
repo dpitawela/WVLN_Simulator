@@ -86,7 +86,7 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       this.highlightClickables(action.outer_html ? action.outer_html : '');
       await this.addDelay(500)
       this.scrollToTheButton()
-      await this.addDelay(1000)
+      await this.addDelay(2000)
 
       this.clickHighlight();
       await this.addDelay(2000)
@@ -95,7 +95,8 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
         this.waitForPageLoad = true
       }
 
-      this.navigate()
+      await this.navigate()
+      await this.addDelay(2000)
     }
   }
 
@@ -188,7 +189,7 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
     return new HTMLImageElement()
   }
 
-  navigate() {
+  async navigate() {
     this.clickedAnchor?.click()
 
     // resetting anchor id
@@ -254,6 +255,10 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       } else {
         this.historyStack.push(this.iteration - 1)
       }
+
+      // to keep wait until page is loaded
+      this.waitForPageLoad = false
+
       console.log(this.historyStack)
 
     } catch (error) {
@@ -263,10 +268,7 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
         // redirects the user to the last successful URL
         iframe.contentWindow?.location.replace(this.lastSuccessfulURL)
       }
-
-    } finally {
-      // to keep wait until page is loaded
-      this.waitForPageLoad = false
+      this.waitForPageLoad = true
     }
   }
 

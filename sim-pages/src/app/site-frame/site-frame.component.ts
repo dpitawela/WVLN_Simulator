@@ -27,6 +27,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   current_y_pos = window.pageYOffset;
   current_x_pos = window.pageXOffset;
   scrollEvent: MouseEvent | any;
+  clickEvent: MouseEvent | any;
 
   // iframe base url
   url: SafeResourceUrl = ''
@@ -58,32 +59,70 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   // this function refreshes all event bindings to the iframe every second
   eventBinder(nativeEl: ElementRef | any): void {
-    nativeEl.contentWindow.removeEventListener('click', this.clickDetect)
-    nativeEl.contentWindow.addEventListener('click', this.clickDetect)
+    nativeEl.contentWindow.removeEventListener('click', this.clickEvent)
+    this.clickEvent = (event: any) => this.clickDetect(event, nativeEl)
+    nativeEl.contentWindow.addEventListener('click', this.clickEvent)
 
-    nativeEl.contentWindow.removeEventListener('mousemove', this.moveDetect)
-    nativeEl.contentWindow.addEventListener('mousemove', this.moveDetect)
+    // nativeEl.contentWindow.removeEventListener('mousemove', this.moveDetect)
+    // nativeEl.contentWindow.addEventListener('mousemove', this.moveDetect)
 
-    nativeEl.contentWindow.removeEventListener('scroll', this.scrollEvent)
-    this.scrollEvent = (event: MouseEvent) => this.scrollDetect(event, nativeEl)
-    nativeEl.contentWindow.addEventListener('scroll', this.scrollEvent)
+    // nativeEl.contentWindow.removeEventListener('scroll', this.scrollEvent)
+    // this.scrollEvent = (event: MouseEvent) => this.scrollDetect(event, nativeEl)
+    // nativeEl.contentWindow.addEventListener('scroll', this.scrollEvent)
   }
 
   // -------------- event listners that work inside iframe content window (child) ---------------
-  clickDetect(event: any): void {
+  clickDetect(event: any, element: any): void {
     // detects if only clicked on a link
+    let data: any = {}
+    let domRect: DOMRect = {
+      height: 0,
+      width: 0,
+      x: 0,
+      y: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+      toJSON: function () {
+        throw new Error('Function not implemented.');
+      }
+    };
+
     if (event.target.closest("a") != null) {
       let anchorTag: HTMLAnchorElement = event.target.closest("a")
-      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': anchorTag.getAttribute("href"), 'outer_html': anchorTag.outerHTML })
+      domRect = anchorTag.getBoundingClientRect()
+      data = { 'type': 'click', 'href': anchorTag.getAttribute("href"), 'outer_html': anchorTag.outerHTML }
 
     } else if (event.target.closest("button") != null) {
-      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': '#', 'outer_html': event.target.closest("button").outerHTML })
+      let button: HTMLButtonElement = event.target.closest("button")
+      domRect = button.getBoundingClientRect()
+      data = { 'type': 'click', 'href': '#', 'outer_html': button.outerHTML }
 
     } else if (event.target.closest("input") != null) {
-      parent.postMessage({ 'type': 'click', 'x': event.clientX, 'y': event.clientY, 'href': '#', 'outer_html': event.target.closest("input").outerHTML })
+      let input: HTMLInputElement = event.target.closest("input")
+      domRect = input.getBoundingClientRect()
+      data = { 'type': 'click', 'href': '#', 'outer_html': input.outerHTML }
     }
     // console.log(event.target.outerHTML)
-    // console.log(event.target['baseURI'])    
+    // console.log(event.target['baseURI'])
+
+    if (data['type'] != null) {
+      // coordinates user actually clicked
+      // data['x'] = event.clientX
+      // data['y'] = event.clientY
+
+      data['x'] = domRect.x
+      data['y'] = domRect.y
+      data['width'] = domRect.width
+      data['height'] = domRect.height
+
+      // data about scroll
+      data['x_offset'] = element.contentWindow.pageXOffset
+      data['y_offset'] = element.contentWindow.pageYOffset
+    }
+
+    parent.postMessage(data)
   }
 
   moveDetect(event: MouseEvent): void {
@@ -110,8 +149,15 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   clickHandle(message: MessageEvent): void {
     let clickAction: ActionModel = {
       type: message.data['type'],
-      x_pos: message.data['x'],
-      y_pos: message.data['y'],
+
+      x: message.data['x'],
+      y: message.data['y'],
+      height: message.data['height'],
+      width: message.data['width'],
+
+      x_offset: message.data['x_offset'],
+      y_offset: message.data['y_offset'],
+
       href: message.data['href'],
       outer_html: Buffer.from(message.data['outer_html'], 'binary').toString('base64')
     }
@@ -145,8 +191,8 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
       }
 
       if (this.isRecordingStarted) {
-        let moveAction: ActionModel = { type: text, x_pos: x_pos, y_pos: y_pos }
-        // this.recordings.push(moveAction)
+        let moveAction: ActionModel = { type: text, x: x_pos, y: y_pos }
+        this.recordings.push(moveAction)
         // console.log(moveAction)
       }
 
@@ -179,7 +225,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
       if (this.isRecordingStarted) {
         let scrollAction: ActionModel = { type: text }
-        // this.recordings.push(scrollAction)
+        this.recordings.push(scrollAction)
         // console.log(scrollAction)
       }
 

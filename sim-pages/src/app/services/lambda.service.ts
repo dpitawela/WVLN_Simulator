@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { StoreModel } from '../types/model';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,23 +10,22 @@ import { StoreModel } from '../types/model';
 export class LambdaService {
 
   constructor(private httpClient: HttpClient) {
-
   }
 
-  storeActions(model: StoreModel) {
+  async storeActions(model: StoreModel): Promise<string> {
+    let result: string = ''
 
     const func_url: string = "https://awf2ytltylqjubzeiqxticfpba0pbeuv.lambda-url.us-east-1.on.aws/"
     let payload: string = JSON.stringify(model)
     console.log(payload)
-    // console.log(JSON.parse(payload))
 
-    // this.httpClient.post<any>(func_url, payload).subscribe({
-    //   next: data => {
-    //     console.log(data);
-    //   },
-    //   error: error => {
-    //     console.error(error);
-    //   }
+    // await lastValueFrom(this.httpClient.post<any>(func_url, payload)).then((data: any) => {
+    //   result = data.successToken
+    // }).catch((error) => {
+    //   console.log(error)
     // })
+
+    console.log(result)
+    return result
   }
 }

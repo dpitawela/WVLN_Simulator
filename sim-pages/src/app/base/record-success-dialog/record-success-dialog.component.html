@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Successfully Recorded...!</h2>
+
+<mat-dialog-content class="mat-typography">
+    <p>Copy and paste below code to the provided space on MTurk.</p>
+
+    <mat-chip-list class="chips">
+        <mat-chip>{{data.successToken}}</mat-chip>
+        <button mat-icon-button [cdkCopyToClipboard]="data.successToken" matTooltip="Copy">
+            <mat-icon fontIcon="content_copy"></mat-icon>
+        </button>
+    </mat-chip-list>
+
+    <p></p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

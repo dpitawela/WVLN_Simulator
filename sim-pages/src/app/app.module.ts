@@ -10,9 +10,15 @@ import { SiteFrameComponent } from './site-frame/site-frame.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlaybackBaseComponent } from './playback-base/playback-base.component';
 import { SitePlaybackFrameComponent } from './site-playback-frame/site-playback-frame.component';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { CorsDialogComponent } from './site-frame/cors-dialog/cors-dialog.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RecordSuccessDialogComponent } from './base/record-success-dialog/record-success-dialog.component';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatChipsModule } from '@angular/material/chips';
+import { LoadDataComponent } from './playback-base/load-data/load-data.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -21,7 +27,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     SiteFrameComponent,
     PlaybackBaseComponent,
     SitePlaybackFrameComponent,
-    CorsDialogComponent
+    CorsDialogComponent,
+    RecordSuccessDialogComponent,
+    LoadDataComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +39,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     HttpClientModule,
     MatDialogModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatChipsModule,
+    MatInputModule,
+    // MatFormFieldModule,
+    ClipboardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
