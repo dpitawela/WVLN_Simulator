@@ -4,10 +4,14 @@
     <p>Enter the token and click load</p>
     <mat-form-field appearance="fill">
         <mat-label>Token</mat-label>
-        <input matInput value="">
+        <input matInput [(ngModel)]="token">
     </mat-form-field>
+
+    <div>
+        <mat-label *ngIf="warning" style="color: red;">Invalid token.. Try again..!</mat-label>
+    </div>
 
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    <button mat-raised-button color='primary'>Load</button>
+    <button (click)="loadData()" mat-raised-button color='primary'>Load</button>
 </mat-dialog-actions>

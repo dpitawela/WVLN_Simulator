@@ -1,11 +1,17 @@
-<div class="grid-parent">
+<div [class]="isRecordingStarted ? 'grid-parent-recording' : 'grid-parent'">
     <h1 class="title">Web Simulator</h1>
+
+    <button (click)="isDiscarded = !isDiscarded" mat-raised-button *ngIf="isRecordingStarted">
+        <mat-icon fontIcon="delete"></mat-icon> Discard
+    </button>
+
     <button (click)="isRecordingStarted = !isRecordingStarted" mat-raised-button
         [color]="isRecordingStarted ? 'warn' : 'basic'">
-        <mat-icon class="rec-icon-color" *ngIf="!isRecordingStarted" fontIcon="fiber_manual_record"></mat-icon>
-        <mat-icon *ngIf="isRecordingStarted" fontIcon="stop"></mat-icon>
-        {{isRecordingStarted ? 'Stop Recording' : 'Start Recording'}}
+        <mat-icon class="red-icon-color" *ngIf="!isRecordingStarted" fontIcon="fiber_manual_record"></mat-icon>
+        <mat-icon *ngIf="isRecordingStarted" fontIcon="save"></mat-icon>
+        {{isRecordingStarted ? 'Save Recording' : 'Start Recording'}}
     </button>
 </div>
 
-<app-site-frame (saveRecording)="saveRecording($event)" [isRecordingStarted]="isRecordingStarted"></app-site-frame>
+<app-site-frame (saveRecording)="saveRecording($event)" [(isRecordingStarted)]="isRecordingStarted"
+    [(isDiscarded)]="isDiscarded"></app-site-frame>

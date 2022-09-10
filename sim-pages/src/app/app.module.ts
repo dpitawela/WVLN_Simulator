@@ -17,8 +17,8 @@ import { RecordSuccessDialogComponent } from './base/record-success-dialog/recor
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatChipsModule } from '@angular/material/chips';
 import { LoadDataComponent } from './playback-base/load-data/load-data.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -42,7 +42,7 @@ import { MatInputModule } from '@angular/material/input';
     MatTooltipModule,
     MatChipsModule,
     MatInputModule,
-    // MatFormFieldModule,
+    FormsModule,
     ClipboardModule
   ],
   providers: [],

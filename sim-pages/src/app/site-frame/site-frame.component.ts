@@ -12,6 +12,11 @@ import { CorsDialogComponent } from './cors-dialog/cors-dialog.component';
 })
 export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isRecordingStarted: boolean = false; // indicates whether to record
+  @Output() isRecordingStartedChange = new EventEmitter<boolean>();
+
+  @Input() isDiscarded: boolean = false; // indicates whether to discard
+  @Output() isDiscardedChange = new EventEmitter<boolean>();
+
   @Output() saveRecording = new EventEmitter<StoreModel>();
 
   recordings: ActionModel[] = [];
@@ -38,7 +43,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChild('myframe') iframe: ElementRef | any;
 
   constructor(private sanitizer: DomSanitizer, public dialog: MatDialog) {
-    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.strURL);
+    this.updateURL(this.strURL)
   }
 
   ngAfterViewInit(): void {
@@ -47,9 +52,21 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (!changes['isRecordingStarted'].currentValue && this.recordings.length > 0) {
+    if (changes['isRecordingStarted'] != null && this.isRecordingStarted) { // when recording started
+      let nativeEl: HTMLIFrameElement = this.iframe.nativeElement;
+      // console.log(nativeEl.contentWindow?.location.pathname.substring(1), this.strURL)
+      if (nativeEl.contentWindow?.location.pathname.substring(1) != this.strURL)
+        this.updateURL(this.strURL) // always recording starts from the index page
+    }
+    else if (changes['isRecordingStarted'] != null && !this.isRecordingStarted && this.recordings.length > 0) {
+      // when recording stopped
       this.saveRecording.emit({ url: this.strURL, actions: this.recordings.slice() } as StoreModel)
       this.recordings.splice(0);
+    }
+    else if (changes['isDiscarded'] != null && this.isDiscarded) { // when discarded
+      this.recordings.splice(0); // discarding recordings
+      this.isDiscardedChange.emit(false)
+      this.isRecordingStartedChange.emit(false)
     }
   }
 
@@ -72,6 +89,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   // -------------- event listners that work inside iframe content window (child) ---------------
+
   clickDetect(event: any, element: any): void {
     // detects if only clicked on a link
     let data: any = {}
@@ -236,6 +254,9 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   checkURL() {
+    //disable history
+    this.disableHistory()
+
     // this function checks if the iframe accessing sites from other origins and restricts
     if (this.iframe == null) {
       return
@@ -253,5 +274,16 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
           iframe.contentWindow?.location.replace(this.lastSuccessfulURL)
       });
     }
+  }
+
+  disableHistory() {
+    history.pushState(null, document.title, location.href);
+    window.addEventListener('popstate', function (event) {
+      history.pushState(null, document.title, location.href);
+    });
+  }
+
+  updateURL(url: string) {
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 }

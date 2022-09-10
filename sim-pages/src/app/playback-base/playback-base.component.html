@@ -45,7 +45,7 @@
     </button>
 </div>
 
-<app-site-playback-frame [retrievedActions]="retrievedActions" [(isPlaying)]="isPlaying" [(isPaused)]="isPaused"
+<app-site-playback-frame *ngIf="retrievedActions != null" [retrievedActions]="retrievedActions" [(isPlaying)]="isPlaying" [(isPaused)]="isPaused"
     [(jumpNextStep)]="jumpNextStep" [(jumpPreviousStep)]="jumpPreviousStep" (iterationUpdate)="updateIteration($event)"
     (nActions)="getTotalActions($event)">
 </app-site-playback-frame>

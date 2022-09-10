@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LambdaService } from '../services/lambda.service';
 import { StoreModel } from '../types/model';
@@ -9,9 +9,15 @@ import { RecordSuccessDialogComponent } from './record-success-dialog/record-suc
   templateUrl: './base.component.html',
   styleUrls: ['./base.component.css']
 })
-export class BaseComponent {
+export class BaseComponent implements AfterViewChecked {
+  isDiscarded:boolean = false
   isRecordingStarted: boolean = false
-  constructor(private lambdaService: LambdaService, private dialog: MatDialog) {
+
+  constructor(private cdr: ChangeDetectorRef, private lambdaService: LambdaService, private dialog: MatDialog) {
+  }
+
+  ngAfterViewChecked(): void {
+    this.cdr.detectChanges();
   }
 
   async saveRecording(recordings: StoreModel) {
