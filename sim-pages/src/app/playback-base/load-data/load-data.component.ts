@@ -9,7 +9,7 @@ import { StoreModel } from 'src/app/types/model';
   styleUrls: ['./load-data.component.css']
 })
 export class LoadDataComponent {
-  token: string = 'R_1662685339'
+  token: string = ''
   warning: boolean = false
 
   constructor(private dialogRef: MatDialogRef<LoadDataComponent>, private lambdaService: LambdaService) {

@@ -1,4 +1,4 @@
-<div [class]="isPlaying && (currentIteration != nActions) ? 'grid-play':'grid-stop'">
+<div class="grid-play">
     <h1 class="title">Web Simulator</h1>
 
     <h5 class="status" *ngIf="!isPlaying && (currentIteration <= 0)"> Not started </h5>
@@ -11,12 +11,14 @@
 
 
     <!-- pause/play -->
-    <button (click)="isPaused = !isPaused" mat-raised-button [color]="isPaused ? 'basic' :'primary'"
-        [matTooltip]="isPaused? 'Resume':'Pause'" *ngIf="isPlaying && currentIteration != nActions"
+    <button (click)="isPlaying ? isPaused = !isPaused : isPlaying = !isPlaying" mat-raised-button
+        [color]="isPlaying && !isPaused ? 'basic' :'primary'"
+        [matTooltip]="!isPlaying ? 'Start playing': isPaused ? 'Resume':'Pause'"
         [disabled]="currentIteration == nActions">
-        <mat-icon *ngIf=" !isPaused" fontIcon="pause"></mat-icon>
-        <mat-icon *ngIf="isPaused" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
-        <!-- {{isPaused ? 'Play' : 'Pause'}} -->
+        <mat-icon *ngIf=" !isPaused && isPlaying" fontIcon="pause"
+            [class]="currentIteration == nActions ? '' : 'blue-icon-color'"></mat-icon>
+        <mat-icon *ngIf="!isPlaying" fontIcon="play_arrow"></mat-icon>
+        <mat-icon *ngIf="isPaused" fontIcon="play_arrow"></mat-icon>
     </button>
 
     <!-- step back -->
@@ -28,12 +30,10 @@
         </mat-icon>
     </button>
 
-    <!-- stop/play -->
-    <button (click)="isPlaying=!isPlaying" mat-raised-button color='basic'
-        [matTooltip]="isPlaying ? 'Stop to go back to the beginning':'Start playing'">
-        <mat-icon *ngIf="!isPlaying" fontIcon="play_arrow" class="blue-icon-color"></mat-icon>
-        <mat-icon *ngIf="isPlaying" fontIcon="stop" class="blue-icon-color"></mat-icon>
-        {{isPlaying ? '' : 'Playback'}}
+    <!-- stop -->
+    <button (click)="isPlaying ? isPlaying = !isPlaying : isPlaying = isPlaying" mat-raised-button color='basic'
+        matTooltip="Stop to go back to the beginning">
+        <mat-icon fontIcon="stop" class="blue-icon-color"></mat-icon>
     </button>
 
     <!-- step forward -->
@@ -45,7 +45,8 @@
     </button>
 </div>
 
-<app-site-playback-frame *ngIf="retrievedActions != null" [retrievedActions]="retrievedActions" [(isPlaying)]="isPlaying" [(isPaused)]="isPaused"
-    [(jumpNextStep)]="jumpNextStep" [(jumpPreviousStep)]="jumpPreviousStep" (iterationUpdate)="updateIteration($event)"
+<app-site-playback-frame *ngIf="retrievedActions != null" [retrievedActions]="retrievedActions"
+    [(isPlaying)]="isPlaying" [(isPaused)]="isPaused" [(jumpNextStep)]="jumpNextStep"
+    [(jumpPreviousStep)]="jumpPreviousStep" (iterationUpdate)="updateIteration($event)"
     (nActions)="getTotalActions($event)">
 </app-site-playback-frame>

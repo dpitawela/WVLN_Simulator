@@ -92,7 +92,8 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       await this.addDelay(2000)
 
       if (action.href?.includes('.html')) {
-        this.waitForPageLoad = true
+        // wait for page load if a link included in the html element [have to find a better way] 
+        this.waitForPageLoad = false
       }
 
       await this.navigate()
