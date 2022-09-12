@@ -81,12 +81,14 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
 
   async playIteration() {
     if (this.retrievedActions.actions) {
+      this.clickedAnchor = null
       let action: ActionModel = this.retrievedActions.actions[this.iteration]
+
       await this.addDelay(1000)
-      this.highlightClickables(action.outer_html ? action.outer_html : '');
-      await this.addDelay(500)
-      this.scrollToTheButton()
+      await this.scrollToTheButton(action.x_offset ? action.x_offset : 0, action.y_offset ? action.y_offset : 0)
       await this.addDelay(2000)
+      this.highlightClickables(action.x ? action.x : 0, action.y ? action.y : 0, action.outer_html ? action.outer_html : '');
+      await this.addDelay(500)
 
       this.clickHighlight();
       await this.addDelay(2000)
@@ -102,10 +104,11 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
   }
 
   // this method highlights all clickables
-  highlightClickables(clickedElementOuterHTML: string) {
+  highlightClickables(x: number, y: number, clickedElementOuterHTML: string) {
     let iframe: HTMLIFrameElement = this.iframe.nativeElement // taking all html code displayed on the iframe at the moment
     if (iframe.contentDocument != null) {
 
+      // identify user clicked element by outer html
       for (let type of ['a', 'input', 'button']) { // check if the clicked was either of these in the array
         let anchors: HTMLCollectionOf<any> = iframe.contentDocument.getElementsByTagName(type)
         for (let anchor of Array.from(anchors)) {
@@ -113,18 +116,32 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
             this.clickedAnchor = anchor
             if (this.clickedAnchor != null) // adding an id
               this.clickedAnchor.id = (this.clickedAnchor.id == '') ? 'clickedAnchor' : this.clickedAnchor.id
+            break
           }
           // anchor.style.borderStyle = "solid"
           // anchor.style.borderColor = "#3f51b5"
         }
       }
+
+      // identify user clicked element by x, y coordinates
+      if (this.clickedAnchor == null) {
+        console.log("from points")
+        this.clickedAnchor = iframe.contentDocument.elementFromPoint(x + 10, y + 10) as HTMLElement
+      }
     }
   }
 
-  scrollToTheButton() {
+  async scrollToTheButton(x_offset: number, y_offset: number) {
     let iframe: HTMLIFrameElement = this.iframe.nativeElement // taking all html code displayed on the iframe at the moment
-    if (iframe.contentDocument != null)
-      this.clickedAnchor?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+
+    if (iframe.contentDocument != null && iframe.contentWindow != null) {
+      let oldContent: string = ''
+      while (oldContent != iframe.contentDocument.body.innerHTML) { // if not scrolled to the position, repeat  
+        oldContent = iframe.contentDocument.body.innerHTML
+        iframe.contentWindow.scroll({ top: y_offset, left: x_offset, behavior: 'smooth' })
+        await this.addDelay(700)
+      }
+    }
   }
 
   // this method highlights the link clicked
@@ -134,7 +151,7 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       // adding styles to the anchor
       this.clickedAnchor.style.borderStyle = "solid"
       this.clickedAnchor.style.borderColor = '#ff4081'
-      this.clickedAnchor.style.borderWidth = "5px"
+      this.clickedAnchor.style.borderWidth = "1px"
       this.clickedAnchor.style.backgroundColor = '#ff4081'
 
       // adding click animation
@@ -241,7 +258,6 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
 
   addToHistory() {
     let iframe: HTMLIFrameElement = this.iframe.nativeElement // taking all html code displayed on the iframe at the moment
-
     try {
       if (this.isJumpingBack || this.iframe == null) {
         this.isJumpingBack = false

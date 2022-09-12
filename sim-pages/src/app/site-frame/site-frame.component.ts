@@ -53,10 +53,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isRecordingStarted'] != null && this.isRecordingStarted) { // when recording started
-      let nativeEl: HTMLIFrameElement = this.iframe.nativeElement;
-      // console.log(nativeEl.contentWindow?.location.pathname.substring(1), this.strURL)
-      if (nativeEl.contentWindow?.location.pathname.substring(1) != this.strURL)
-        this.updateURL(this.strURL) // always recording starts from the index page
+      this.updateURL(this.strURL) // always recording starts from the index page
     }
     else if (changes['isRecordingStarted'] != null && !this.isRecordingStarted && this.recordings.length > 0) {
       // when recording stopped
@@ -121,6 +118,11 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
       let input: HTMLInputElement = event.target.closest("input")
       domRect = input.getBoundingClientRect()
       data = { 'type': 'click', 'href': '#', 'outer_html': input.outerHTML }
+
+    } else { // to handle elements made clickable by javascripts
+      let element: HTMLElement = event.target
+      domRect = element.getBoundingClientRect()
+      data = { 'type': 'click', 'href': '#', 'outer_html': element.outerHTML }
     }
     // console.log(event.target.outerHTML)
     // console.log(event.target['baseURI'])
