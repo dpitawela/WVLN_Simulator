@@ -15,7 +15,6 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
   historyStack: number[] = [];
   lastSuccessfulURL: string | undefined = ''
   errorPage: boolean = false
-  waitForPageLoad = false
 
   @Input() retrievedActions: StoreModel = {} as StoreModel
   actions: ActionModel[] = []
@@ -62,9 +61,11 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
 
   async startPlaying() {
     if (this.retrievedActions.actions) {
+      let oldContent: string | undefined;
       while (this.isPlaying && !this.isVideoEnded()) {
 
-        if (this.waitForPageLoad) {
+        if ((this.errorPage || this.isPageStillLoading(oldContent != null ? oldContent : '')) && this.iteration > -1) {
+          oldContent = this.iframe.nativeElement.contentDocument?.body.innerHTML
           await this.addDelay(1000)
           continue
         }
@@ -83,20 +84,16 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
     if (this.retrievedActions.actions) {
       this.clickedAnchor = null
       let action: ActionModel = this.retrievedActions.actions[this.iteration]
-
       await this.addDelay(1000)
+
       await this.scrollToTheButton(action.x_offset ? action.x_offset : 0, action.y_offset ? action.y_offset : 0)
       await this.addDelay(2000)
-      this.highlightClickables(action.x ? action.x : 0, action.y ? action.y : 0, action.outer_html ? action.outer_html : '');
+
+      this.identifyTheElement(action.x ? action.x : 0, action.y ? action.y : 0, action.outer_html ? action.outer_html : '');
       await this.addDelay(500)
 
       this.clickHighlight();
       await this.addDelay(2000)
-
-      if (action.href?.includes('.html')) {
-        // wait for page load if a link included in the html element [have to find a better way] 
-        this.waitForPageLoad = false
-      }
 
       await this.navigate()
       await this.addDelay(2000)
@@ -104,7 +101,7 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
   }
 
   // this method highlights all clickables
-  highlightClickables(x: number, y: number, clickedElementOuterHTML: string) {
+  identifyTheElement(x: number, y: number, clickedElementOuterHTML: string) {
     let iframe: HTMLIFrameElement = this.iframe.nativeElement // taking all html code displayed on the iframe at the moment
     if (iframe.contentDocument != null) {
 
@@ -118,8 +115,6 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
               this.clickedAnchor.id = (this.clickedAnchor.id == '') ? 'clickedAnchor' : this.clickedAnchor.id
             break
           }
-          // anchor.style.borderStyle = "solid"
-          // anchor.style.borderColor = "#3f51b5"
         }
       }
 
@@ -208,7 +203,14 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
   }
 
   async navigate() {
-    this.clickedAnchor?.click()
+    // forcing to open insinde the iframe 
+    (this.clickedAnchor as HTMLAnchorElement).target = "_self";
+
+    // clicks the element
+    this.clickedAnchor?.click();
+
+    // resetting anchor highlight styles
+    this.clickedAnchor?.removeAttribute('style')
 
     // resetting anchor id
     if (this.clickedAnchor?.id == 'clickedAnchor')
@@ -273,19 +275,15 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
         this.historyStack.push(this.iteration - 1)
       }
 
-      // to keep wait until page is loaded
-      this.waitForPageLoad = false
-
       console.log(this.historyStack)
 
     } catch (error) {
       // if navigated to another origin
+      this.errorPage = true
       if (this.lastSuccessfulURL != null) {
-        this.errorPage = true
         // redirects the user to the last successful URL
         iframe.contentWindow?.location.replace(this.lastSuccessfulURL)
       }
-      this.waitForPageLoad = true
     }
   }
 
@@ -335,5 +333,10 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
     if (this.retrievedActions.actions)
       return this.retrievedActions.actions.length == this.iteration + 1
     return true
+  }
+
+  isPageStillLoading(oldContent: string) {
+    let iframe: HTMLIFrameElement = this.iframe.nativeElement
+    return oldContent != iframe.contentDocument?.body.innerHTML
   }
 }

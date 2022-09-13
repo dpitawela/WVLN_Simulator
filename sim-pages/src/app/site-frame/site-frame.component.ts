@@ -108,6 +108,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
       let anchorTag: HTMLAnchorElement = event.target.closest("a")
       domRect = anchorTag.getBoundingClientRect()
       data = { 'type': 'click', 'href': anchorTag.getAttribute("href"), 'outer_html': anchorTag.outerHTML }
+      anchorTag.target = "_self" // forcing links to open inside the iframe
 
     } else if (event.target.closest("button") != null) {
       let button: HTMLButtonElement = event.target.closest("button")
@@ -123,6 +124,7 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
       let element: HTMLElement = event.target
       domRect = element.getBoundingClientRect()
       data = { 'type': 'click', 'href': '#', 'outer_html': element.outerHTML }
+
     }
     // console.log(event.target.outerHTML)
     // console.log(event.target['baseURI'])
