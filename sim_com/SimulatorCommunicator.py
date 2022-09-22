@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
 # cd C:\Program Files\Google\Chrome\Application
-# chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\WVLN_Simulator\SimCom\profile"
+# chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\WVLN_Simulator\sim_com\profile"
 
 SIMULATOR_URL = 'http://localhost:4200/simcom'
 DEBUGGER_ADDRESS = 'localhost:9222'
@@ -77,7 +77,7 @@ def getAllClickables(driver):
     return elements
 
 
-def take_screenshot(driver, save=False):
+def takeScreenshot(driver, save=False):
     # To save as a file directly from the browser
     # save_s = "var s=window.document.createElement('script');" \
     #      "s.type = 'text/javascript';" \
@@ -137,11 +137,11 @@ def performAction(bb):
     switchToIframe(driver)
     clickElement(driver, bb['x'], bb['y'])
 
-    # loading the whole page
+    # to load the whole page
     scrollToTheBottom(driver)
 
     elements = getAllClickables(driver)
-    img_data = take_screenshot(driver, True)
+    img_data = takeScreenshot(driver, True)
 
     # data to return
     data = {
@@ -153,6 +153,7 @@ def performAction(bb):
 
 
 # example bounding box
-bb = {'x': 289, 'y': 551, 'height': 47, 'width': 269}
+bb = {'x': 289, 'y': 551, 'height': 47, 'width': 223}
+# bb = {'x': 414, 'y': 337, 'height': 222, 'width': 167}
 data = performAction(bb)
 # print(data)
