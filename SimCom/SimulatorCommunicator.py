@@ -13,15 +13,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
 # cd C:\Program Files\Google\Chrome\Application
-# chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\WVLN_Simulator\SimComm\profile"
+# chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\WVLN_Simulator\SimCom\profile"
 
-SIMULATOR_URL = 'http://localhost:4200/'
+SIMULATOR_URL = 'http://localhost:4200/simcom'
+DEBUGGER_ADDRESS = 'localhost:9222'
 
 
 def setup():
     # initiating chrome web driver
     opt = Options()
-    opt.add_experimental_option("debuggerAddress", "localhost:9222")  # port where chrome run in debugger mode
+    opt.add_experimental_option("debuggerAddress", DEBUGGER_ADDRESS)  # port where chrome run in debugger mode
     # opt.headless = True
     driver = webdriver.Chrome(service=Service("./chromedriver"), options=opt)  # driver initialisation
 
@@ -51,10 +52,16 @@ def scrollTo(driver, x, y):
 
 def scrollToTheBottom(driver):
     scrollTo(driver, 0, 'document.body.scrollHeight')
+    # to come back to the top
+    scrollTo(driver, 0, 0)
 
 
 def clickElement(driver, x, y):
     driver.execute_script("document.elementFromPoint({}, {}).click()".format(x + 10, y + 10))
+
+    # to wait if the page inside frame navigates to another page
+    driver.switch_to.default_content()
+    switchToIframe(driver)
 
 
 def getAllClickables(driver):
@@ -63,6 +70,7 @@ def getAllClickables(driver):
     elements_a = driver.find_elements(By.TAG_NAME, 'a')
     for element in elements_a:
         if element.is_displayed():  # excluding all the hidden links
+            # print(element.text)
             elements.append(element.rect)
         # print(element.rect, element.is_displayed(), element.text)
 
@@ -96,10 +104,15 @@ def take_screenshot(driver, save=False):
     #                       "});")
 
     # adding the html2canvas JS to the DOM
+
+    # reading the JS file
+    with open('html2canvas/html2canvas.js', 'r', encoding='utf-8') as dataFile:
+        html2canvas = dataFile.read()
+
     driver.execute_script("var s=window.document.createElement('script');"
                           "s.type = 'text/javascript';"
-                          "s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.js';"
-                          "window.document.head.appendChild(s);")
+                          # "s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.js';"
+                          "s.src=" + html2canvas + "; window.document.head.appendChild(s);")
 
     # taking the screenshot
     img_data: str = driver.execute_async_script("var result = arguments[0];"
@@ -119,10 +132,13 @@ def take_screenshot(driver, save=False):
     return img_data
 
 
-def performAction():
+def performAction(bb):
     driver = setup()
     switchToIframe(driver)
-    clickElement(driver, 289, 551)
+    clickElement(driver, bb['x'], bb['y'])
+
+    # loading the whole page
+    scrollToTheBottom(driver)
 
     elements = getAllClickables(driver)
     img_data = take_screenshot(driver, True)
@@ -136,5 +152,7 @@ def performAction():
     return data
 
 
-data = performAction()
+# example bounding box
+bb = {'x': 289, 'y': 551, 'height': 47, 'width': 269}
+data = performAction(bb)
 # print(data)

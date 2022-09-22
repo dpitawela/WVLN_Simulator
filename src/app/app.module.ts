@@ -19,6 +19,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { LoadDataComponent } from './playback-base/load-data/load-data.component';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { SimComComponent } from './sim-com/sim-com.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { FormsModule } from '@angular/forms';
     SitePlaybackFrameComponent,
     CorsDialogComponent,
     RecordSuccessDialogComponent,
-    LoadDataComponent
+    LoadDataComponent,
+    SimComComponent
   ],
   imports: [
     BrowserModule,
