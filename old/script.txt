@@ -1,8 +1,0 @@
-screen
-click 150 222
-screen
-goto2
-screen
-goto3
-screen
-close

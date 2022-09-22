@@ -19,11 +19,11 @@ export class LambdaService {
     let payload: string = JSON.stringify(model)
     console.log(payload)
 
-    await lastValueFrom(this.httpClient.post<any>(func_url, payload)).then((data: any) => {
-      result = data.successToken
-    }).catch((error) => {
-      console.log(error)
-    })
+    // await lastValueFrom(this.httpClient.post<any>(func_url, payload)).then((data: any) => {
+    //   result = data.successToken
+    // }).catch((error) => {
+    //   console.log(error)
+    // })
 
     console.log("recorded")
     return result
