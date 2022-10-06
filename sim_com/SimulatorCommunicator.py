@@ -15,11 +15,11 @@ from selenium.webdriver.support.wait import WebDriverWait
 # cd C:\Program Files\Google\Chrome\Application
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\WVLN_Simulator\sim_com\profile"
 
-SIMULATOR_URL = 'http://localhost:4200/simcom'
+SIMULATOR_URL = 'http://localhost:4200/'
 DEBUGGER_ADDRESS = 'localhost:9222'
 
 
-def setup():
+def setup(force_reset_url=False):
     # initiating chrome web driver
     opt = Options()
     opt.add_experimental_option("debuggerAddress", DEBUGGER_ADDRESS)  # port where chrome run in debugger mode
@@ -30,7 +30,14 @@ def setup():
     if driver.current_url.strip() != SIMULATOR_URL:
         driver.get(SIMULATOR_URL)
 
+    if force_reset_url:
+        updateURL(driver, 'assets/crawled/hansel/hanselfrombasel.com/index.html')
+
     return driver
+
+
+def updateURL(driver: ChromiumDriver, url: str):
+    driver.execute_script("document.getElementById('myframe').src = '{}'".format(url))
 
 
 def switchToIframe(driver: ChromiumDriver):
@@ -57,6 +64,16 @@ def scrollToTheBottom(driver):
 
 
 def clickElement(driver, x, y):
+    # scroll down to get the link to the viewport
+
+    if y >= 720:
+        scrollTo(driver, x, y - 720)
+        y = y - (y - 720)
+
+    #
+    # actions = ActionChains(driver)
+    # actions.click
+    # click
     driver.execute_script("document.elementFromPoint({}, {}).click()".format(x + 10, y + 10))
 
     # to wait if the page inside frame navigates to another page
@@ -126,7 +143,7 @@ def takeScreenshot(driver, save=False):
     img_data = img_data.replace("data:image/jpeg;base64,", "")
 
     if save:
-        with open("x.jpeg", "wb") as fh:
+        with open("sh.jpeg", "wb") as fh:
             fh.write(base64.b64decode(img_data))
 
     return img_data
@@ -141,7 +158,7 @@ def performAction(bb):
     scrollToTheBottom(driver)
 
     elements = getAllClickables(driver)
-    img_data = takeScreenshot(driver, True)
+    img_data = takeScreenshot(driver, False)
 
     # data to return
     data = {
@@ -155,5 +172,6 @@ def performAction(bb):
 # example bounding box
 bb = {'x': 289, 'y': 551, 'height': 47, 'width': 223}
 # bb = {'x': 414, 'y': 337, 'height': 222, 'width': 167}
-data = performAction(bb)
+
+# data = performAction(bb)
 # print(data)
