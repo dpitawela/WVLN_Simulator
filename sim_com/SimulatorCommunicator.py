@@ -15,7 +15,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 # cd C:\Program Files\Google\Chrome\Application
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\WVLN_Simulator\sim_com\profile"
 
-SIMULATOR_URL = 'http://localhost:4200/'
+SIMULATOR_URL = 'http://localhost:4200/simcom'
 DEBUGGER_ADDRESS = 'localhost:9222'
 
 
@@ -26,6 +26,9 @@ def setup(force_reset_url=False):
     # opt.headless = True
     driver = webdriver.Chrome(service=Service("./chromedriver"), options=opt)  # driver initialisation
 
+    # resize the window
+    # driver.set_window_size(974, 1087)
+    
     # navigating to the simulator
     if driver.current_url.strip() != SIMULATOR_URL:
         driver.get(SIMULATOR_URL)

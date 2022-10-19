@@ -2,6 +2,7 @@
 
 # SimComm
 /sim_com/profile
+/sim_com/data*
 
 # Assets
 /src/assets
