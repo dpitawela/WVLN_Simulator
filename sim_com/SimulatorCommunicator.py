@@ -1,5 +1,6 @@
 import time
 import base64
+import json
 
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -11,9 +12,14 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chromium.webdriver import ChromiumDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 # cd C:\Program Files\Google\Chrome\Application
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\WVLN_Simulator\sim_com\profile"
+
+# mac
+# cd /Volumes/ddrive/WVLN/WVLN_Simulator/sim_com
+# /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir="profile"
 
 SIMULATOR_URL = 'http://localhost:4200/simcom'
 DEBUGGER_ADDRESS = 'localhost:9222'
@@ -22,13 +28,19 @@ DEBUGGER_ADDRESS = 'localhost:9222'
 def setup(force_reset_url=False):
     # initiating chrome web driver
     opt = Options()
-    opt.add_experimental_option("debuggerAddress", DEBUGGER_ADDRESS)  # port where chrome run in debugger mode
+    # port where chrome run in debugger mode
+    opt.add_experimental_option("debuggerAddress", DEBUGGER_ADDRESS)
     # opt.headless = True
-    driver = webdriver.Chrome(service=Service("./chromedriver"), options=opt)  # driver initialisation
+
+    # for windows
+    # driver = webdriver.Chrome(service=Service("./chromedriver"), options=opt)  # driver initialisation
+    # for mac m1
+    driver = webdriver.Chrome(
+        executable_path=ChromeDriverManager().install(), options=opt)
 
     # resize the window
     # driver.set_window_size(974, 1087)
-    
+
     # navigating to the simulator
     if driver.current_url.strip() != SIMULATOR_URL:
         driver.get(SIMULATOR_URL)
@@ -40,7 +52,8 @@ def setup(force_reset_url=False):
 
 
 def updateURL(driver: ChromiumDriver, url: str):
-    driver.execute_script("document.getElementById('myframe').src = '{}'".format(url))
+    driver.execute_script(
+        "document.getElementById('myframe').src = '{}'".format(url))
 
 
 def switchToIframe(driver: ChromiumDriver):
@@ -77,7 +90,8 @@ def clickElement(driver, x, y):
     # actions = ActionChains(driver)
     # actions.click
     # click
-    driver.execute_script("document.elementFromPoint({}, {}).click()".format(x + 10, y + 10))
+    driver.execute_script(
+        "document.elementFromPoint({}, {}).click()".format(x + 10, y + 10))
 
     # to wait if the page inside frame navigates to another page
     driver.switch_to.default_content()
@@ -172,8 +186,30 @@ def performAction(bb):
     return data
 
 
+def screenShotsFromFile(fname):
+    # may not implement
+
+    # with open('data/' + fname + '.json', 'r') as f:
+    #     data = json.load(f)
+
+    #     for action in data['actions']:
+    #         coords = {
+    #             'x': float(action['x']) + float(action['x_offset']),
+    #             'y': float(action['y']) + float(action['y_offset']),
+    #             'height': action['height'],
+    #             'width': action['width']
+    #         }
+
+    #         print(coords)
+    #         performAction(coords)
+            # break
+
+    # print(data)
+    pass
+# screenShotsFromFile('R_1666138390_3')
+
 # example bounding box
-bb = {'x': 289, 'y': 551, 'height': 47, 'width': 223}
+# bb = {'x': 289, 'y': 551, 'height': 47, 'width': 223}
 # bb = {'x': 414, 'y': 337, 'height': 222, 'width': 167}
 
 # data = performAction(bb)
