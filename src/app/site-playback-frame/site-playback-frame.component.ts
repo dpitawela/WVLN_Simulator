@@ -146,7 +146,8 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       // adding styles to the anchor
       this.clickedAnchor.style.borderStyle = "solid"
       this.clickedAnchor.style.borderColor = '#ff4081'
-      this.clickedAnchor.style.borderWidth = "1px"
+      this.clickedAnchor.style.borderWidth = "3px"
+      this.clickedAnchor.style.boxSizing = "border-box"
       this.clickedAnchor.style.backgroundColor = '#ff4081'
 
       // adding click animation
