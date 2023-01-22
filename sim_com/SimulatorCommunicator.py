@@ -22,14 +22,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 # /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir="profile"
 
 SIMULATOR_URL = 'http://localhost:4200/simcom'
-DEBUGGER_ADDRESS = 'localhost:9222'
+# DEBUGGER_ADDRESS = 'localhost:9222'
 
 
-def setup(force_reset_url=False):
+def setup(port, force_reset_url=False):
     # initiating chrome web driver
     opt = Options()
     # port where chrome run in debugger mode
-    opt.add_experimental_option("debuggerAddress", DEBUGGER_ADDRESS)
+    opt.add_experimental_option("debuggerAddress", "localhost:" + str(port))
     # opt.headless = True
 
     # for windows
@@ -79,19 +79,19 @@ def scrollToTheBottom(driver):
     scrollTo(driver, 0, 0)
 
 
-def clickElement(driver, x, y):
+def clickElement(driver, x, y, height=0):
     # scroll down to get the link to the viewport
 
-    if y >= 720:
-        scrollTo(driver, x, y - 720)
-        y = y - (y - 720)
+    if y > 865:
+        scrollTo(driver, x, y - 865 + height)
+        y = y - (y - 865 + height)
 
     #
     # actions = ActionChains(driver)
     # actions.click
     # click
     driver.execute_script(
-        "document.elementFromPoint({}, {}).click()".format(x + 10, y + 10))
+        "document.elementFromPoint({}, {}).click()".format(x, y))
 
     # to wait if the page inside frame navigates to another page
     driver.switch_to.default_content()
@@ -169,7 +169,7 @@ def takeScreenshot(driver, save=False):
 def performAction(bb):
     driver = setup()
     switchToIframe(driver)
-    clickElement(driver, bb['x'], bb['y'])
+    clickElement(driver, bb['x'], bb['y'], bb['height'])
 
     # to load the whole page
     scrollToTheBottom(driver)
@@ -208,7 +208,7 @@ def screenShotsFromFile(fname):
     pass
 # screenShotsFromFile('R_1666138390_3')
 
-# example bounding box
+# example bounding box [y=y+y_offset]
 # bb = {'x': 289, 'y': 551, 'height': 47, 'width': 223}
 # bb = {'x': 414, 'y': 337, 'height': 222, 'width': 167}
 

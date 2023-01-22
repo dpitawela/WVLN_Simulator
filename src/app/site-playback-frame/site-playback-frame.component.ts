@@ -121,7 +121,7 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       // identify user clicked element by x, y coordinates
       if (this.clickedAnchor == null) {
         console.log("from points")
-        this.clickedAnchor = iframe.contentDocument.elementFromPoint(x + 10, y + 10) as HTMLElement
+        this.clickedAnchor = iframe.contentDocument.elementFromPoint(x, y) as HTMLElement
       }
     }
   }
