@@ -167,7 +167,7 @@ def takeScreenshot(driver, save=False):
 
 
 def performAction(bb):
-    driver = setup()
+    driver = setup(port=9222)
     switchToIframe(driver)
     clickElement(driver, bb['x'], bb['y'], bb['height'])
 
@@ -206,11 +206,10 @@ def screenShotsFromFile(fname):
 
     # print(data)
     pass
-# screenShotsFromFile('R_1666138390_3')
 
 # example bounding box [y=y+y_offset]
 # bb = {'x': 289, 'y': 551, 'height': 47, 'width': 223}
-# bb = {'x': 414, 'y': 337, 'height': 222, 'width': 167}
+# bb = {'x': 706.3, 'y': 637+1833.3, 'height': 228, 'width': 171}
 
 # data = performAction(bb)
 # print(data)

@@ -1,8 +1,10 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # SimComm
-/sim_com/profile
-/sim_com/data*
+/sim_com/profile*/*
+/sim_com/data/*
+/sim_com/data_player/*
+/sim_com/good_data/*
 
 # Assets
 /src/assets
