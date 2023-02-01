@@ -1,0 +1,58 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!-- You must include this JavaScript file -->\
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>\
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,\
+      please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->\
+\
+<div>\
+    <h2>Please read the below instructions carefully before beginning the task..!</h2>\
+    <p><b>Step 1:</b> Below you are presented with a video player called <i>"web simulator"</i> and a token right above the player. <br>\
+    You may copy the token and paste it to the provided text box on the player and hit load to load the recording.</p>\
+    <p> <b>Step 2:</b> After watching the video, come up with a question that can be answered in <b><i>maximum 3 words</i></b> based on the content of the <b><i>end page</i></b> and <b><i>intermediate web pages</i></b> the video goes through. </i></b>\
+    Enter the <i>question</i> and <i>answer</i> in the provided text boxes right below the player and hit submit.</p>\
+\
+    <p><u>Overview of the player</u> <br>\
+    Upon successful loading through a token, the player and the 4 buttons on top right corner will be activated.<br>\
+    <ul>\
+        <li>Play button: plays the sequence of steps continuously one ofter another</li>\
+        <li>Stop button: comes back to the beginning of the sequence </li>\
+        <li>Step-forward button: plays the next step and pauses. This can be used to play the sequence step by step in your own pace to have a closer look</li>\
+        <li>Step-back button: goes back to the first step performed on the previous page</li>\
+    </ul>\
+    On the video, all button cliks are <i>highlighted with coloured bounding boxes.</i> Pay close attention to them as they are vital to come up with a question of interest.\
+    </p>\
+</div>\
+<hr>\
+<!-- You must include crowd-form so that your task submits answers to MTurk -->\
+<crowd-form answer-format="flatten-objects">\
+  <div>\
+      <h2 align="center">Token: $\{token\}</h2>\
+  </div>\
+  \
+  <div>\
+    <p align="center">\
+      <iframe id="myframe2" width="830" height="950" style="visibility:visible; align:center" src="https://d35l4ob736xwc3.cloudfront.net/playback">\
+      </iframe>\
+    </p>\
+  </div>\
+  \
+  <p>Make sure the question is,</p>\
+  <ul>\
+      <li>focused on <b><i> $\{criterion1\} </i></b> and <b><i> $\{criterion2\} </i></b></li>\
+      <li>incorporated with information in <i><b>images (visual cues) and text</i></b> in the <b><i>end page and intermediate web pages</i></b>\
+  </ul>\
+  </p>\
+  <p><i>Note: The quality of your submission is evaluated based on attention to details in both text and images, contextual support and creativity of the question</i></p>\
+    \
+  <crowd-input label="Question" name="question" min-length="100" placeholder="Must contain at least 15 words" required></crowd-input>\
+  <crowd-input label="Answer" name="answer" required></crowd-input>\
+\
+  <!--<crowd-text-area label="Sequence In Step By Step" name="sequence" rows=2 placeholder="Step by step description" required></crowd-text-area>-->\
+  \
+</crowd-form>}

@@ -37,6 +37,8 @@ export class SiteFrameComponent implements AfterViewInit, OnDestroy, OnChanges {
   // iframe base url
   url: SafeResourceUrl = ''
   strURL = 'assets/crawled/hansel/hanselfrombasel.com/index.html'
+  // strURL = 'assets/crawled/sna/www.sarahandabraham.com/index.html'
+  // strURL = 'assets/crawled/es/index.html'
   lastSuccessfulURL: string | undefined
 
   // to detect iframe

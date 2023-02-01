@@ -10,6 +10,8 @@ export class SimComComponent implements AfterViewInit {
   // iframe base url
   url: SafeResourceUrl = ''
   strURL = 'assets/crawled/hansel/hanselfrombasel.com/index.html'
+  // strURL = 'assets/crawled/sna/www.sarahandabraham.com/index.html'
+  // strURL = 'assets/crawled/es/index.html'
 
   // to detect iframe
   @ViewChild('myframe') iframe: ElementRef | any;

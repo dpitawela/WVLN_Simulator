@@ -109,7 +109,10 @@ export class SitePlaybackFrameComponent implements OnChanges, OnInit, DoCheck {
       for (let type of ['a', 'input', 'button']) { // check if the clicked was either of these in the array
         let anchors: HTMLCollectionOf<any> = iframe.contentDocument.getElementsByTagName(type)
         for (let anchor of Array.from(anchors)) {
-          if (anchor.outerHTML == clickedElementOuterHTML) {
+          
+          let anchor_bounds = anchor.getBoundingClientRect()
+          // if outer html is similar and x,y are closer to x,y captured by generator algorithm
+          if (anchor.outerHTML == clickedElementOuterHTML && Math.abs(anchor_bounds.x - x) < 30 && Math.abs(anchor_bounds.y - y) < 30) {
             this.clickedAnchor = anchor
             if (this.clickedAnchor != null) // adding an id
               this.clickedAnchor.id = (this.clickedAnchor.id == '') ? 'clickedAnchor' : this.clickedAnchor.id

@@ -25,7 +25,7 @@ SIMULATOR_URL = 'http://localhost:4200/simcom'
 # DEBUGGER_ADDRESS = 'localhost:9222'
 
 
-def setup(port, force_reset_url=False):
+def setup(port, url, force_reset_url=False):
     # initiating chrome web driver
     opt = Options()
     # port where chrome run in debugger mode
@@ -46,7 +46,7 @@ def setup(port, force_reset_url=False):
         driver.get(SIMULATOR_URL)
 
     if force_reset_url:
-        updateURL(driver, 'assets/crawled/hansel/hanselfrombasel.com/index.html')
+        updateURL(driver, url)
 
     return driver
 
@@ -79,11 +79,16 @@ def scrollToTheBottom(driver):
     scrollTo(driver, 0, 0)
 
 
-def clickElement(driver, x, y, height=0):
+def clickElement(driver, x, y, height=0, width=0):
     # scroll down to get the link to the viewport
 
+    scroll_x = x - 812 + width
+    if x > 812:
+        scrollTo(driver, scroll_x, 0)
+        x = x - scroll_x
+    
     if y > 865:
-        scrollTo(driver, x, y - 865 + height)
+        scrollTo(driver, scroll_x, y - 865 + height)
         y = y - (y - 865 + height)
 
     #
@@ -104,8 +109,9 @@ def getAllClickables(driver):
     elements_a = driver.find_elements(By.TAG_NAME, 'a')
     for element in elements_a:
         if element.is_displayed():  # excluding all the hidden links
-            # print(element.text)
-            elements.append(element.rect)
+            elemRect = element.rect
+            clientRect = driver.execute_script("return arguments[0].getBoundingClientRect();", element)
+            elements.append({'x': elemRect['x'], 'y': elemRect['y'], 'height': clientRect['height'], 'width': clientRect['width']})
         # print(element.rect, element.is_displayed(), element.text)
 
     return elements
@@ -166,10 +172,10 @@ def takeScreenshot(driver, save=False):
     return img_data
 
 
-def performAction(bb):
-    driver = setup(port=9222)
+def performAction(url, bb, force_reset_url=False):
+    driver = setup(port=9222, url=url, force_reset_url=force_reset_url)
     switchToIframe(driver)
-    clickElement(driver, bb['x'], bb['y'], bb['height'])
+    clickElement(driver, bb['x'], bb['y'], bb['height'], bb['width'])
 
     # to load the whole page
     scrollToTheBottom(driver)
@@ -207,9 +213,16 @@ def screenShotsFromFile(fname):
     # print(data)
     pass
 
-# example bounding box [y=y+y_offset]
-# bb = {'x': 289, 'y': 551, 'height': 47, 'width': 223}
-# bb = {'x': 706.3, 'y': 637+1833.3, 'height': 228, 'width': 171}
 
-# data = performAction(bb)
+def playFromFile(name):
+    with open('data_player/'+name+'.json', 'r') as f:
+        data = json.load(f)
+        url = data['url']
+        actions = [{'x':action['x']+action['x_offset'], 'y':action['y']+action['y_offset'], 'height':action['height'], 'width':action['width']} for action in data['actions']]
+        return url, actions
+
+
+# example bounding box [y=y+y_offset]
+# url, actions = playFromFile('R_1675220943_ES_6')
+# data = performAction(url, actions[6])
 # print(data)
